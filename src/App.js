@@ -1,18 +1,22 @@
-import {View, Text, Image} from 'react-native';
+import {StyleSheet, SafeAreaView} from 'react-native';
 import React from 'react';
-import {HomeScreen} from './screens';
-import {Images} from './assets/images';
-import {Icons} from './assets/icons';
+import {COLORS} from './utils/Colors';
+
+import RootNavigator from './routers';
 
 const App = () => {
   return (
-    <View>
-      <Text>App Screen </Text>
-      <HomeScreen />
-      <Image source={Images.Banner2} style={{width: 80, height: 80}} />
-      <Image source={Icons.Game} style={{width: 80, height: 80}} />
-    </View>
+    <SafeAreaView style={styles.container}>
+      <RootNavigator />
+    </SafeAreaView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+});
 
 export default App;
