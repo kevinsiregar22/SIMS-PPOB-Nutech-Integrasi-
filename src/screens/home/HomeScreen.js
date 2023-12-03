@@ -14,7 +14,8 @@ import {dummyServices} from './dummyServices';
 import ServiceIcon from './ServiceIcon';
 import {dummyBanner} from './dummyBanner';
 import BannerScroll from './BannerScroll';
-const HomeScreen = ({navigation}) => {
+import {navigate} from '../../routers/navigate';
+const HomeScreen = () => {
   const [isBalanceVisible, setIsBalanceVisible] = useState(false);
 
   const toggleBalanceVisibility = () => {
@@ -30,7 +31,7 @@ const HomeScreen = ({navigation}) => {
           <Image source={Images.Logo} style={styles.logo} />
           <Text style={styles.logoText}>SIMS PPOB</Text>
         </View>
-        <TouchableOpacity onPress={() => navigation.navigate('Akun')}>
+        <TouchableOpacity onPress={() => navigate('Akun')}>
           <Image source={Images.Profile2} style={styles.logo} />
         </TouchableOpacity>
       </View>

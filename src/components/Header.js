@@ -1,12 +1,10 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {useNavigation} from '@react-navigation/native';
+import {navigationRef} from '../routers/navigate';
 const Header = ({title}) => {
-  const navigation = useNavigation();
-
   const handleGoBack = () => {
-    navigation.goBack();
+    navigationRef.goBack();
   };
   return (
     <View style={styles.container}>

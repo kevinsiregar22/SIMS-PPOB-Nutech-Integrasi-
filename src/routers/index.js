@@ -1,10 +1,11 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import Router from './StackScreen';
+import {navigationRef} from './navigate';
 
 const RootNavigator = () => {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <Router />
     </NavigationContainer>
   );

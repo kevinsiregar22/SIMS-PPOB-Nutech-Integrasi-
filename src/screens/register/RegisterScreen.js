@@ -1,51 +1,143 @@
-import {View, Text, Image, StyleSheet, SafeAreaView} from 'react-native';
 import React from 'react';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {View, Text, Image, StyleSheet, SafeAreaView} from 'react-native';
+import {Formik} from 'formik';
+import * as Yup from 'yup';
 import {Input, MyButton, Link, Gap} from '../../components';
 import {Images} from '../../assets/images';
 import {COLORS} from '../../utils/Colors';
+import {navigate} from '../../routers/navigate';
 
-const RegisterScreen = ({navigation}) => {
+const validationSchema = Yup.object().shape({
+  email: Yup.string()
+    .email('Format email tidak valid')
+    .required('Email wajib diisi'),
+  firstName: Yup.string().required('Nama depan wajib diisi'),
+  lastName: Yup.string().required('Nama belakang wajib diisi'),
+  password: Yup.string()
+    .min(8, 'Password minimal 8 karakter')
+    .required('Password wajib diisi'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password'), null], 'Konfirmasi password tidak sesuai')
+    .required('Konfirmasi password wajib diisi'),
+});
+
+const RegisterScreen = () => {
+  const handleRegistration = values => {
+    navigate('Login');
+    // console.log(values);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Image source={Images.Logo} style={styles.logo} />
-        <Text style={styles.logoText}>SIMS PPOB</Text>
-      </View>
-      <Gap height={30} />
-      <Text style={styles.introText}>
-        Lengkapi data untuk {'\n'}membuat akun
-      </Text>
-      <Gap height={30} />
-      <Input iconName="at" placeholder="masukkan email anda" />
-      <Gap height={14} />
-      <Input placeholder="nama depan" iconName="user" />
-      <Gap height={14} />
-      <Input placeholder="nama belakang" iconName="user" />
-      <Gap height={14} />
-      <Input
-        placeholder="buat password"
-        iconName="lock"
-        secureTextEntry={Icon}
-      />
-      <Gap height={14} />
-      <Input
-        placeholder="konfirmasi password"
-        iconName="lock"
-        secureTextEntry={Icon}
-      />
-      <Gap height={30} />
-      <MyButton title={'Registrasi'} bgColor={COLORS.red} />
-      <Gap height={24} />
-      <View style={styles.linkContainer}>
-        <Link label={'Sudah punya akun ? login'} />
-        <Gap width={4} />
-        <Link
-          label={'disini'}
-          color={COLORS.red}
-          onPress={() => navigation.navigate('Login')}
-        />
-      </View>
+      <Formik
+        initialValues={{
+          email: '',
+          firstName: '',
+          lastName: '',
+          password: '',
+          confirmPassword: '',
+        }}
+        validationSchema={validationSchema}
+        onSubmit={handleRegistration}>
+        {({
+          handleChange,
+          handleBlur,
+          handleSubmit,
+          values,
+          errors,
+          touched,
+        }) => (
+          <>
+            <View style={styles.header}>
+              <Image source={Images.Logo} style={styles.logo} />
+              <Text style={styles.logoText}>SIMS PPOB</Text>
+            </View>
+            <Gap height={30} />
+            <Text style={styles.introText}>
+              Lengkapi data untuk {'\n'}membuat akun
+            </Text>
+            <Gap height={30} />
+            <Input
+              iconName="at"
+              placeholder="Masukkan email Anda"
+              onChangeText={handleChange('email')}
+              onBlur={handleBlur('email')}
+              value={values.email}
+            />
+            <Gap height={4} />
+
+            {touched.email && errors.email && (
+              <Text style={styles.errorText}>{errors.email}</Text>
+            )}
+            <Gap height={14} />
+            <Input
+              placeholder="Nama depan"
+              iconName="user"
+              onChangeText={handleChange('firstName')}
+              onBlur={handleBlur('firstName')}
+              value={values.firstName}
+            />
+            <Gap height={4} />
+
+            {touched.firstName && errors.firstName && (
+              <Text style={styles.errorText}>{errors.firstName}</Text>
+            )}
+            <Gap height={14} />
+            <Input
+              placeholder="Nama belakang"
+              iconName="user"
+              onChangeText={handleChange('lastName')}
+              onBlur={handleBlur('lastName')}
+              value={values.lastName}
+            />
+            <Gap height={4} />
+            {touched.lastName && errors.lastName && (
+              <Text style={styles.errorText}>{errors.lastName}</Text>
+            )}
+            <Gap height={14} />
+            <Input
+              placeholder="Buat password"
+              iconName="lock"
+              secureTextEntry
+              onChangeText={handleChange('password')}
+              onBlur={handleBlur('password')}
+              value={values.password}
+            />
+            <Gap height={4} />
+            {touched.password && errors.password && (
+              <Text style={styles.errorText}>{errors.password}</Text>
+            )}
+            <Gap height={14} />
+            <Input
+              placeholder="Konfirmasi password"
+              iconName="lock"
+              secureTextEntry
+              onChangeText={handleChange('confirmPassword')}
+              onBlur={handleBlur('confirmPassword')}
+              value={values.confirmPassword}
+            />
+            {touched.confirmPassword && errors.confirmPassword && (
+              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+            )}
+            <Gap height={30} />
+            <MyButton
+              title={'Registrasi'}
+              bgColor={COLORS.red}
+              onPress={handleSubmit}
+            />
+            <Gap height={24} />
+            <View style={styles.linkContainer}>
+              <Link label={'Sudah punya akun ? login'} />
+              <Gap width={4} />
+              <Link
+                label={'disini'}
+                color={COLORS.red}
+                onPress={() => navigate('Login')}
+              />
+            </View>
+          </>
+        )}
+      </Formik>
     </SafeAreaView>
   );
 };
@@ -60,7 +152,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 30,
+    paddingTop: 20,
   },
   logo: {
     width: 40,
@@ -80,6 +172,10 @@ const styles = StyleSheet.create({
   linkContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
+  },
+  errorText: {
+    color: 'red',
+    alignSelf: 'flex-end',
   },
 });
 

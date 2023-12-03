@@ -11,6 +11,7 @@ const Input = ({
   size = 20,
   iconName,
   keyboardType,
+  editable = true,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -32,17 +33,18 @@ const Input = ({
       style={[
         styles.container,
         {borderColor: isFocused ? COLORS.red : COLORS.gray},
+        !editable,
       ]}>
       {iconName && (
         <Icon
           name={iconName}
           size={size}
-          color={isFocused ? COLORS.red : 'black'}
+          color={isFocused ? COLORS.red : COLORS.black}
           style={styles.icon}
         />
       )}
       <TextInput
-        style={[styles.input, {color: COLORS.black}]}
+        style={[styles.input, {color: COLORS.black}, !editable]}
         placeholder={placeholder}
         placeholderTextColor={COLORS.gray}
         secureTextEntry={secureTextEntry ? !showPassword : false}
@@ -52,9 +54,13 @@ const Input = ({
         onFocus={handleFocus}
         onBlur={handleBlur}
         keyboardType={keyboardType}
+        editable={editable}
       />
       {secureTextEntry && (
-        <TouchableOpacity onPress={handleToggleVisibility} style={styles.icon}>
+        <TouchableOpacity
+          onPress={handleToggleVisibility}
+          style={styles.icon}
+          disabled={!editable}>
           <Icon
             name={showPassword ? 'eye-slash' : 'eye'}
             size={20}

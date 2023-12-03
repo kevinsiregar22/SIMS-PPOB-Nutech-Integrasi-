@@ -45,7 +45,7 @@ const getTabBarIcon = (route, focused, color) => {
 const BottomTab = () => {
   return (
     <Tab.Navigator
-      initialRouteName="Transaction"
+      initialRouteName="Akun"
       screenOptions={({route}) => ({
         headerShown: false,
         tabBarActiveTintColor: COLORS.black,
