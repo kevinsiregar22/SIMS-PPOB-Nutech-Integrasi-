@@ -1,5 +1,11 @@
 import React from 'react';
-import {View, Image, StyleSheet, FlatList} from 'react-native';
+import {
+  View,
+  Image,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
 
 const BannerScroll = ({data}) => {
   return (
@@ -9,13 +15,13 @@ const BannerScroll = ({data}) => {
       horizontal
       showsHorizontalScrollIndicator={false}
       renderItem={({item}) => (
-        <View style={styles.bannerContainer}>
+        <TouchableOpacity style={styles.bannerContainer}>
           <Image
             source={{uri: item.banner_image}}
             style={styles.bannerImage}
             resizeMode="contain"
           />
-        </View>
+        </TouchableOpacity>
       )}
     />
   );

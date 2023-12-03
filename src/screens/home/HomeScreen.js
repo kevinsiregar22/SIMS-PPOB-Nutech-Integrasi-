@@ -5,13 +5,11 @@ import {
   StyleSheet,
   Image,
   TouchableOpacity,
-  ImageBackground,
   SafeAreaView,
 } from 'react-native';
 import {COLORS} from '../../utils/Colors';
 import {Images} from '../../assets/images';
-import {Gap} from '../../components';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import {Gap, SaldoCard} from '../../components';
 import {dummyServices} from './dummyServices';
 import ServiceIcon from './ServiceIcon';
 import {dummyBanner} from './dummyBanner';
@@ -40,37 +38,19 @@ const HomeScreen = ({navigation}) => {
       <Text style={styles.welcomeText}>Selamat Datang,</Text>
       <Text style={styles.nameText}>Simon Kevin Siregar</Text>
       <Gap height={24} />
-      <ImageBackground
-        source={Images.Bgsaldo}
-        style={styles.background}
-        borderRadius={10}>
-        <View style={styles.containerBanner}>
-          <Text style={styles.saldoText}>Saldo Anda,</Text>
-          <Text style={styles.saldoRp}>
-            {isBalanceVisible ? `Rp. ${saldo}` : 'Rp •••••••'}
-          </Text>
-          <View style={styles.lihatSaldoContainer}>
-            <Text style={styles.lihatSaldoText}>
-              {isBalanceVisible ? 'Sembunyikan Saldo' : 'Lihat Saldo'}
-            </Text>
-
-            <TouchableOpacity onPress={toggleBalanceVisibility}>
-              <Icon
-                name={isBalanceVisible ? 'eye-slash' : 'eye'}
-                size={20}
-                color={COLORS.white}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </ImageBackground>
+      <SaldoCard
+        saldo={saldo}
+        isBalanceVisible={isBalanceVisible}
+        toggleBalanceVisibility={toggleBalanceVisibility}
+        showText={true}
+      />
 
       <Gap height={14} />
 
       <ServiceIcon data={[dummyServices.slice(0, 6)]} />
       <ServiceIcon data={[dummyServices.slice(6, 12)]} />
       <Gap height={6} />
-      <Text style={styles.sectionTitle}>Temukan Promo Menarik</Text>
+      <Text>Temukan Promo Menarik</Text>
       <Gap height={14} />
       <BannerScroll data={dummyBanner} />
     </SafeAreaView>
@@ -112,32 +92,5 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '600',
     lineHeight: 30,
-  },
-  background: {
-    width: '100%',
-    height: 140,
-    resizeMode: 'cover',
-    borderRadius: 10,
-  },
-  containerBanner: {
-    flex: 1,
-    padding: 16,
-  },
-  saldoText: {
-    color: COLORS.white,
-    fontWeight: '600',
-  },
-  saldoRp: {
-    color: COLORS.white,
-    fontSize: 26,
-    fontWeight: '600',
-    paddingVertical: 14,
-  },
-  lihatSaldoContainer: {
-    flexDirection: 'row',
-  },
-  lihatSaldoText: {
-    color: COLORS.white,
-    marginRight: 8,
   },
 });

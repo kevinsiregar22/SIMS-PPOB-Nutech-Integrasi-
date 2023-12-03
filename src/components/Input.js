@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View, TextInput, TouchableOpacity, StyleSheet} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import {COLORS} from '../utils/Colors';
 
 const Input = ({
@@ -8,7 +8,9 @@ const Input = ({
   secureTextEntry,
   value,
   onChangeText,
+  size = 20,
   iconName,
+  keyboardType,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -34,7 +36,7 @@ const Input = ({
       {iconName && (
         <Icon
           name={iconName}
-          size={20}
+          size={size}
           color={isFocused ? COLORS.red : 'black'}
           style={styles.icon}
         />
@@ -49,6 +51,7 @@ const Input = ({
         textContentType={secureTextEntry ? 'password' : 'none'}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        keyboardType={keyboardType}
       />
       {secureTextEntry && (
         <TouchableOpacity onPress={handleToggleVisibility} style={styles.icon}>

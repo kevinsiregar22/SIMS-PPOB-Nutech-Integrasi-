@@ -9,7 +9,7 @@ const Stack = createStackNavigator();
 const StackScreen = () => {
   return (
     <Stack.Navigator
-      initialRouteName="TabMain"
+      initialRouteName="Login"
       screenOptions={{
         headerShown: false,
       }}>
