@@ -1,3 +1,4 @@
+// BannerScroll.js
 import React from 'react';
 import {
   View,
@@ -5,9 +6,13 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Text,
 } from 'react-native';
 
 const BannerScroll = ({data}) => {
+  if (!data || data.length === 0) {
+    return <Text>No Banner Data</Text>;
+  }
   return (
     <FlatList
       data={data}

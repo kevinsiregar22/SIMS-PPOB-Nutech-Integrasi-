@@ -17,6 +17,13 @@ const SaldoCard = ({
   showText,
 }) => {
   const cardHeight = showText ? 140 : 100;
+
+  const formattedSaldo = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(saldo);
+
   return (
     <ImageBackground
       source={Images.Bgsaldo}
@@ -25,7 +32,7 @@ const SaldoCard = ({
       <View style={styles.containerBanner}>
         <Text style={styles.saldoText}>Saldo Anda,</Text>
         <Text style={styles.saldoRp}>
-          {isBalanceVisible ? `Rp. ${saldo}` : 'Rp •••••••'}
+          {isBalanceVisible ? formattedSaldo : 'Rp •••••••'}
         </Text>
         {showText && (
           <View style={styles.lihatSaldoContainer}>

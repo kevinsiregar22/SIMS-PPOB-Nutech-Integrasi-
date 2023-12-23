@@ -1,29 +1,38 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet, SafeAreaView} from 'react-native';
+import {View, Text, Image, StyleSheet, SafeAreaView, Alert} from 'react-native';
+import {useDispatch} from 'react-redux';
 import {Formik} from 'formik';
 import * as Yup from 'yup';
-import {Input, MyButton, Link, Gap} from '../../components';
-import {Images} from '../../assets/images';
+import {MyButton, Gap, Input, Link} from '../../components';
 import {COLORS} from '../../utils/Colors';
 import {navigate} from '../../routers/navigate';
+import {loginUser} from '../../store/authSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
-    .email('Format email tidak valid')
-    .matches(
-      /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$/,
-      'Format email tidak valid',
-    )
-    .required('Email wajib diisi'),
-  password: Yup.string()
-    .min(8, 'Password minimal 8 karakter')
-    .required('Password wajib diisi'),
+    .email('Invalid email format')
+    .required('Email is required'),
+  password: Yup.string().required('Password is required'),
 });
 
 const LoginScreen = () => {
-  const handleLogin = values => {
-    navigate('TabMain');
-    // console.log(values);
+  const dispatch = useDispatch();
+
+  const handleLogin = async values => {
+    try {
+      const response = await dispatch(loginUser(values));
+
+      if (loginUser.fulfilled.match(response)) {
+        const data = response.payload;
+        await AsyncStorage.setItem('token', data.token);
+        navigate('TabMain');
+      } else {
+        Alert.alert('Username atau password salah');
+      }
+    } catch (error) {
+      console.error('Error during login:', error.message);
+    }
   };
 
   return (
@@ -42,17 +51,20 @@ const LoginScreen = () => {
         }) => (
           <>
             <View style={styles.header}>
-              <Image source={Images.Logo} style={styles.logo} />
+              <Image
+                source={require('../../assets/images/Logo.png')}
+                style={styles.logo}
+              />
               <Text style={styles.logoText}>SIMS PPOB</Text>
             </View>
             <Gap height={48} />
             <Text style={styles.introText}>
-              Masuk atau buat akun {'\n'}untuk memulai
+              Sign in or create an account {'\n'}to get started
             </Text>
             <Gap height={48} />
             <Input
               iconName="at"
-              placeholder="Masukkan email Anda"
+              placeholder="Enter your email"
               onChangeText={handleChange('email')}
               onBlur={handleBlur('email')}
               value={values.email}
@@ -63,7 +75,7 @@ const LoginScreen = () => {
             )}
             <Gap height={24} />
             <Input
-              placeholder="Masukkan password Anda"
+              placeholder="Enter your password"
               iconName="lock"
               secureTextEntry
               onChangeText={handleChange('password')}
@@ -76,16 +88,16 @@ const LoginScreen = () => {
             )}
             <Gap height={48} />
             <MyButton
-              title={'Masuk'}
+              title={'Sign In'}
               bgColor={COLORS.red}
               onPress={handleSubmit}
             />
             <Gap height={48} />
             <View style={styles.linkContainer}>
-              <Link label={'Belum punya akun? Registrasi'} />
+              <Link label={"Don't have an account? Register"} />
               <Gap width={4} />
               <Link
-                label={'disini'}
+                label={'here'}
                 color={COLORS.red}
                 onPress={() => navigate('Register')}
               />

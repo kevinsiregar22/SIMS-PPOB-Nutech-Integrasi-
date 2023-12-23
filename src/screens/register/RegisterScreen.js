@@ -22,11 +22,36 @@ const validationSchema = Yup.object().shape({
 });
 
 const RegisterScreen = () => {
-  const handleRegistration = values => {
-    navigate('Login');
-    // console.log(values);
-  };
+  const handleRegistration = async values => {
+    try {
+      const response = await fetch(
+        'https://take-home-test-api.nutech-integrasi.app/registration',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: values.email,
+            first_name: values.firstName,
+            last_name: values.lastName,
+            password: values.password,
+          }),
+        },
+      );
 
+      const data = await response.json();
+      console.log('data : ', data);
+
+      if (data.status === 0) {
+        navigate('Login');
+      } else {
+        console.error('Registration failed:', data.error);
+      }
+    } catch (error) {
+      console.error('Network error:', error);
+    }
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Formik

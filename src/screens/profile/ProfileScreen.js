@@ -1,86 +1,149 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSelector, useDispatch} from 'react-redux';
 import {Gap, Header, Input, MyButton} from '../../components';
 import {COLORS} from '../../utils/Colors';
 import {Images} from '../../assets/images';
 import {navigate} from '../../routers/navigate';
+import {clearToken} from '../../store/authSlice';
+import {
+  updateProfileWithToken,
+  fetchUserProfileWithToken,
+  selectUserProfile,
+  updateProfileImageWithToken,
+} from '../../store/userProfileSlice';
 
 const ProfileScreen = () => {
+  const dispatch = useDispatch();
   const [isEditing, setIsEditing] = useState(false);
+  const [editedFirstName, setEditedFirstName] = useState('');
+  const [editedLastName, setEditedLastName] = useState('');
+
+  const userProfile = useSelector(selectUserProfile);
 
   const handleEditPress = () => {
     setIsEditing(!isEditing);
   };
 
-  const renderEditButton = () => {
-    if (isEditing) {
-      return (
-        <MyButton
-          title={'Simpan'}
-          bgColor={COLORS.red}
-          onPress={handleEditPress}
-        />
-      );
-    } else {
-      return (
-        <MyButton
-          title={'Edit Profile'}
-          bgColor={COLORS.red}
-          onPress={handleEditPress}
-        />
-      );
+  const handleUpdateProfileImage = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        await dispatch(updateProfileImageWithToken(token));
+        await dispatch(fetchUserProfileWithToken(token));
+      }
+    } catch (error) {
+      console.error('Error updating profile image:', error.message);
     }
   };
 
-  const renderLogoutButton = () => {
-    if (isEditing) {
-      return <MyButton title={'Batalkan'} onPress={handleEditPress} />;
-    } else {
-      return <MyButton title={'LogOut'} onPress={() => navigate('Login')} />;
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('token');
+    } catch (error) {
+      console.error('Error removing token from AsyncStorage:', error.message);
+    }
+
+    dispatch(clearToken());
+    navigate('Login');
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      await dispatch(
+        updateProfileWithToken({
+          token,
+          firstName: editedFirstName,
+          lastName: editedLastName,
+        }),
+      );
+
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating profile:', error.message);
     }
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        await dispatch(fetchUserProfileWithToken(token));
+      }
+    };
+
+    fetchData();
+  }, [dispatch]);
 
   return (
     <View style={styles.container}>
       <Header title={'Akun'} />
       <View style={styles.containerProfile}>
         <Image source={Images.Profile2} style={styles.profile} />
-        <TouchableOpacity style={styles.pencilIconContainer}>
+        <TouchableOpacity
+          style={styles.pencilIconContainer}
+          onPress={handleUpdateProfileImage}>
           <Icon name="pencil" size={14} color={COLORS.black} />
         </TouchableOpacity>
       </View>
       <Gap height={10} />
-      <Text style={styles.nama}>Simon Kevin Siregar</Text>
+      <Text style={styles.nama}>
+        {userProfile?.first_name} {userProfile?.last_name}
+      </Text>
       <Gap height={10} />
       <Text style={styles.ket}>Email</Text>
       <Input
         iconName={'at'}
-        placeholder={'Email'}
-        editable={isEditing}
-        style={isEditing ? styles.inputActive : styles.inputInactive}
+        placeholder={userProfile?.email}
+        editable={false}
+        style={styles.inputInactive}
       />
       <Gap height={10} />
       <Text style={styles.ket}>Nama Depan</Text>
       <Input
         iconName={'user'}
-        placeholder={'Nama depan'}
+        placeholder={userProfile?.first_name}
         editable={isEditing}
+        onChangeText={text => setEditedFirstName(text)}
+        value={editedFirstName}
         style={isEditing ? styles.inputActive : styles.inputInactive}
       />
       <Gap height={10} />
       <Text style={styles.ket}>Nama Belakang</Text>
       <Input
         iconName={'user'}
-        placeholder={'Nama Belakang'}
+        placeholder={userProfile?.last_name}
         editable={isEditing}
+        onChangeText={text => setEditedLastName(text)}
+        value={editedLastName}
         style={isEditing ? styles.inputActive : styles.inputInactive}
       />
       <Gap height={40} />
-      {renderEditButton()}
+      {isEditing ? (
+        <>
+          <MyButton
+            title={'Simpan'}
+            bgColor={COLORS.red}
+            onPress={handleSaveProfile}
+          />
+          <Gap height={20} />
+        </>
+      ) : (
+        <MyButton
+          title={'Edit Profile'}
+          bgColor={COLORS.red}
+          onPress={handleEditPress}
+        />
+      )}
       <Gap height={20} />
-      {renderLogoutButton()}
+      <MyButton
+        title={isEditing ? 'Batalkan' : 'LogOut'}
+        onPress={isEditing ? handleEditPress : handleLogout}
+      />
     </View>
   );
 };

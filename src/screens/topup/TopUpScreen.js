@@ -1,5 +1,6 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, Platform, Alert} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
 import {
   CardTopUpSaldo,
   Gap,
@@ -9,16 +10,24 @@ import {
   SaldoCard,
 } from '../../components';
 import {COLORS} from '../../utils/Colors';
+import {fetchBalance} from '../../store/balanceSlice';
+import {topupAmount} from '../../store/topupSlice';
+import {setBalance} from '../../store/setBalanceSlice';
 
 const TopUpScreen = ({navigation}) => {
-  const saldo = 12340;
+  const dispatch = useDispatch();
   const [topUpAmount, setTopUpAmount] = useState('');
+  const balance = useSelector(state => state.balance.value);
 
   const handleInputChange = value => {
     setTopUpAmount(value);
   };
 
-  const handleTopUp = () => {
+  useEffect(() => {
+    setTopUpAmount('');
+  }, [balance]);
+
+  const handleTopUp = async () => {
     const amount = parseInt(topUpAmount);
 
     if (amount < 10000 || amount > 1000000) {
@@ -27,7 +36,14 @@ const TopUpScreen = ({navigation}) => {
         'Nominal top-up harus antara Rp. 10.000 dan Rp. 1.000.000',
       );
     } else {
-      Alert.alert('Sukses', `Top-up sejumlah Rp. ${amount} berhasil!`);
+      try {
+        await dispatch(topupAmount(amount));
+        dispatch(fetchBalance());
+        dispatch(setBalance(balance + amount));
+        Alert.alert('Sukses', `Top-up sejumlah Rp. ${amount} berhasil!`);
+      } catch (error) {
+        Alert.alert('Gagal', 'Top-up gagal. Silakan coba lagi.');
+      }
     }
   };
 
@@ -37,72 +53,74 @@ const TopUpScreen = ({navigation}) => {
 
   const buttonColor = topUpAmount.trim() === '' ? COLORS.gray : COLORS.red;
 
+  useEffect(() => {
+    setTopUpAmount('');
+  }, [balance]);
+
   return (
     <View
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}>
-      <View style={styles.container}>
-        <Header title={'Top Up'} />
-        <Gap height={10} />
-        <View style={styles.cardShowSaldo}>
-          <SaldoCard saldo={saldo} isBalanceVisible={true} />
-        </View>
-        <Gap height={40} />
+      <Header title={'Top Up'} />
+      <Gap height={10} />
+      <View style={styles.cardShowSaldo}>
+        <SaldoCard saldo={balance} isBalanceVisible={true} />
+      </View>
+      <Gap height={40} />
 
-        <Text style={styles.textInfo}>Silakan masukkan</Text>
-        <Text style={styles.textInfo2}>nominal Top Up</Text>
+      <Text style={styles.textInfo}>Silakan masukkan</Text>
+      <Text style={styles.textInfo2}>nominal Top Up</Text>
 
-        <Gap height={40} />
+      <Gap height={40} />
 
-        <Input
-          placeholder={'Masukkan nominal Top Up'}
-          iconName={'money-check'}
-          size={14}
-          keyboardType={'numeric'}
-          onChangeText={handleInputChange}
-          value={topUpAmount}
+      <Input
+        placeholder={'Masukkan nominal Top Up'}
+        iconName={'money-check'}
+        size={14}
+        keyboardType={'numeric'}
+        onChangeText={handleInputChange}
+        value={topUpAmount}
+      />
+
+      <Gap height={30} />
+      <View style={styles.saldoTopUpCard}>
+        <CardTopUpSaldo
+          price={'Rp. 10.000'}
+          onPress={() => handleCardTopUpPress('Rp. 10.000')}
         />
-
-        <Gap height={30} />
-        <View style={styles.saldoTopUpCard}>
-          <CardTopUpSaldo
-            price={'Rp. 10.000'}
-            onPress={() => handleCardTopUpPress('Rp. 10.000')}
-          />
-          <CardTopUpSaldo
-            price={'Rp. 20.000'}
-            onPress={() => handleCardTopUpPress('Rp. 20.000')}
-          />
-          <CardTopUpSaldo
-            price={'Rp. 50.000'}
-            onPress={() => handleCardTopUpPress('Rp. 50.000')}
-          />
-        </View>
-        <Gap height={20} />
-
-        <View style={styles.saldoTopUpCard}>
-          <CardTopUpSaldo
-            price={'Rp. 100.000'}
-            onPress={() => handleCardTopUpPress('Rp. 100.000')}
-          />
-          <CardTopUpSaldo
-            price={'Rp. 250.000'}
-            onPress={() => handleCardTopUpPress('Rp. 250.000')}
-          />
-          <CardTopUpSaldo
-            price={'Rp. 500.000'}
-            onPress={() => handleCardTopUpPress('Rp. 500.000')}
-          />
-        </View>
-        <Gap height={40} />
-
-        <MyButton
-          title={'Top Up'}
-          bgColor={buttonColor}
-          onPress={handleTopUp}
-          disabled={topUpAmount.trim() === ''}
+        <CardTopUpSaldo
+          price={'Rp. 20.000'}
+          onPress={() => handleCardTopUpPress('Rp. 20.000')}
+        />
+        <CardTopUpSaldo
+          price={'Rp. 50.000'}
+          onPress={() => handleCardTopUpPress('Rp. 50.000')}
         />
       </View>
+      <Gap height={20} />
+
+      <View style={styles.saldoTopUpCard}>
+        <CardTopUpSaldo
+          price={'Rp. 100.000'}
+          onPress={() => handleCardTopUpPress('Rp. 100.000')}
+        />
+        <CardTopUpSaldo
+          price={'Rp. 250.000'}
+          onPress={() => handleCardTopUpPress('Rp. 250.000')}
+        />
+        <CardTopUpSaldo
+          price={'Rp. 500.000'}
+          onPress={() => handleCardTopUpPress('Rp. 500.000')}
+        />
+      </View>
+      <Gap height={40} />
+
+      <MyButton
+        title={'Top Up'}
+        bgColor={buttonColor}
+        onPress={handleTopUp}
+        disabled={topUpAmount.trim() === ''}
+      />
     </View>
   );
 };
