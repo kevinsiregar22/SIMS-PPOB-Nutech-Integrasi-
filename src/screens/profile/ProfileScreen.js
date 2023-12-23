@@ -22,8 +22,14 @@ const ProfileScreen = () => {
   const [editedLastName, setEditedLastName] = useState('');
 
   const userProfile = useSelector(selectUserProfile);
-
   const handleEditPress = () => {
+    if (isEditing) {
+      handleSaveProfile();
+    } else {
+      setEditedFirstName(userProfile?.first_name || '');
+      setEditedLastName(userProfile?.last_name || '');
+    }
+
     setIsEditing(!isEditing);
   };
 
@@ -32,7 +38,6 @@ const ProfileScreen = () => {
       const token = await AsyncStorage.getItem('token');
       if (token) {
         await dispatch(updateProfileImageWithToken(token));
-        await dispatch(fetchUserProfileWithToken(token));
       }
     } catch (error) {
       console.error('Error updating profile image:', error.message);

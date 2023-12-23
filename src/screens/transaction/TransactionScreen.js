@@ -13,13 +13,13 @@ const TransactionScreen = () => {
   const dispatch = useDispatch();
   const balance = useSelector(state => state.balance.value);
   const transactions = useSelector(state => state.transaction.data);
-  // const transactionHistory = useSelector(state => state.transaction.history);
+  const transactionHistory = useSelector(state => state.transaction.history);
 
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(5);
 
   useEffect(() => {
-    dispatch(fetchTransaction('VOUCHER_MAKANAN'));
+    dispatch(fetchTransaction('TV'));
     dispatch(fetchTransactionHistory({offset, limit}));
   }, [dispatch, offset, limit]);
 
@@ -31,13 +31,13 @@ const TransactionScreen = () => {
     />
   );
 
-  // const renderTransactionHistoryItem = ({item}) => (
-  //   <CardRiwayatTrans
-  //     nominal={`Rp. ${item.total_amount}`}
-  //     tipeService={item.description}
-  //     tanggalJam={item.created_on}
-  //   />
-  // );
+  const renderTransactionHistoryItem = ({item}) => (
+    <CardRiwayatTrans
+      nominal={`Rp. ${item.total_amount}`}
+      tipeService={item.description}
+      tanggalJam={item.created_on}
+    />
+  );
 
   const handleShowMore = () => {
     setOffset(offset + limit);
@@ -60,14 +60,14 @@ const TransactionScreen = () => {
       />
 
       <Gap height={20} />
-      {/* <Text style={styles.textSection}>Transaction History</Text>
+      <Text style={styles.textSection}>Transaction History</Text>
       <Gap height={20} />
 
       <FlatList
         data={transactionHistory}
         renderItem={renderTransactionHistoryItem}
         keyExtractor={item => item.invoice_number}
-      /> */}
+      />
 
       <TouchableOpacity onPress={handleShowMore}>
         <Text style={styles.textShowMore}>Show More</Text>

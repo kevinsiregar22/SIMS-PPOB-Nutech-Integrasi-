@@ -63,7 +63,7 @@ export const updateProfileWithToken = createAsyncThunk(
 
 export const updateProfileImageWithToken = createAsyncThunk(
   'userProfile/updateProfileImageWithToken',
-  async (token, {rejectWithValue}) => {
+  async (token, {rejectWithValue, dispatch}) => {
     try {
       const profileImage = await pickImage();
 
@@ -90,7 +90,7 @@ export const updateProfileImageWithToken = createAsyncThunk(
       const data = await response.json();
 
       if (data.status === 0) {
-        return data.data;
+        dispatch(setUserProfileData(data.data));
       } else {
         throw new Error(data.message);
       }

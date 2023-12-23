@@ -1,5 +1,6 @@
 // TopUpSlice.js
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+import {fetchBalance} from './balanceSlice';
 
 export const topupAmount = createAsyncThunk(
   'topup/topupAmount',
@@ -28,7 +29,11 @@ export const topupAmount = createAsyncThunk(
       }
 
       const data = await response.json();
-      return data.data.balance;
+      // return data.data.balance;
+      const newBalance = data.data.balance;
+
+      await thunkAPI.dispatch(fetchBalance(token));
+      return newBalance;
     } catch (error) {
       throw new Error(error.message);
     }
